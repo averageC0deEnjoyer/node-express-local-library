@@ -94,6 +94,11 @@ exports.bookinstance_delete_get = asyncHandler(async (req, res, next) => {
   const bookInstance = await BookInstance.findById(req.params.id)
     .populate('book')
     .exec();
+
+  if (bookInstance === null) {
+    res.redirect('/catalog/bookinstances');
+  }
+
   res.render('bookinstance_delete', {
     title: 'Book Instance Delete',
     bookInstance: bookInstance,
@@ -112,6 +117,13 @@ exports.bookinstance_update_get = asyncHandler(async (req, res, next) => {
     BookInstance.findById(req.params.id),
     Book.find({}, 'title').sort({ title: 1 }).exec(),
   ]);
+
+  if (bookInstance === null) {
+    debug(`id not found on update: ${req.params.id}`);
+    const err = new Error('Book instance not found');
+    err.status = 404;
+    return next(err);
+  }
 
   res.render('bookinstance_form', {
     title: 'Update BookInstance',

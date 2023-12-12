@@ -111,6 +111,13 @@ exports.genre_delete_post = asyncHandler(async (req, res, next) => {
 exports.genre_update_get = asyncHandler(async (req, res, next) => {
   const selectedGenre = await Genre.findById(req.params.id).exec();
 
+  if (selectedGenre === null) {
+    debug(`id not found on update: ${req.params.id}`);
+    const err = new Error('Genre not found');
+    err.status = 404;
+    return next(err);
+  }
+
   res.render('genre_form', { title: 'Update Genre', genre: selectedGenre });
 });
 
